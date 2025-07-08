@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -59,14 +60,13 @@ const Calculator = () => {
       setWaitingForOperand(true);
       setOperation(nextOperation);
       
-      // Only update history if we're not already waiting for operand (prevents double operators)
-      if (!waitingForOperand && previousValue !== null) {
-        setHistory(prev => prev + ` ${nextOperation} `);
-      } else if (previousValue !== null) {
-        // Replace the last operator if multiple operations are pressed
-        setHistory(prev => prev.replace(/ [+\-×÷] $/, ` ${nextOperation} `));
-      } else {
-        setHistory(prev => prev + ` ${nextOperation} `);
+      // Simple history update - just add the operator if we have a previous value
+      if (previousValue !== null) {
+        setHistory(prev => {
+          // Remove any trailing operator first, then add the new one
+          const cleanHistory = prev.replace(/ [+\-×÷] $/, '');
+          return cleanHistory + ` ${nextOperation} `;
+        });
       }
     } else {
       setOperation(null);
