@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -102,7 +101,13 @@ const Calculator = () => {
   return (
     <Card className="p-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
       {/* Display */}
-      <div className="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+      <div className="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700 relative">
+        {/* Operation Indicator */}
+        {operation && operation !== '=' && (
+          <div className="absolute top-2 left-2 text-purple-400 text-sm font-mono bg-slate-800/70 px-2 py-1 rounded">
+            {operation}
+          </div>
+        )}
         <div className="text-right text-3xl font-mono text-white overflow-hidden">
           {display}
         </div>
