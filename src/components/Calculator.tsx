@@ -41,7 +41,7 @@ const Calculator = () => {
     if (previousValue === null) {
       setPreviousValue(inputValue);
       setHistory(String(inputValue));
-    } else if (operation) {
+    } else if (operation && !waitingForOperand) {
       const currentValue = previousValue || 0;
       const newValue = calculate(currentValue, inputValue, operation);
 
@@ -51,15 +51,20 @@ const Calculator = () => {
       if (nextOperation === '=') {
         setHistory(history + ` ${operation} ${inputValue} = ${newValue}`);
       } else {
-        setHistory(history + ` ${operation} ${inputValue} = ${newValue}`);
+        setHistory(`${newValue}`);
       }
     }
 
     if (nextOperation !== '=') {
       setWaitingForOperand(true);
       setOperation(nextOperation);
-      if (previousValue !== null) {
+      
+      // Only update history if we're not already waiting for operand (prevents double operators)
+      if (!waitingForOperand && previousValue !== null) {
         setHistory(prev => prev + ` ${nextOperation} `);
+      } else if (previousValue !== null) {
+        // Replace the last operator if multiple operations are pressed
+        setHistory(prev => prev.replace(/ [+\-×÷] $/, ` ${nextOperation} `));
       } else {
         setHistory(prev => prev + ` ${nextOperation} `);
       }
