@@ -7,6 +7,7 @@ const Calculator = () => {
   const [previousValue, setPreviousValue] = useState<number | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
+  const [history, setHistory] = useState('');
 
   const inputNumber = (num: string) => {
     if (waitingForOperand) {
@@ -31,6 +32,7 @@ const Calculator = () => {
     setPreviousValue(null);
     setOperation(null);
     setWaitingForOperand(false);
+    setHistory('');
   };
 
   const performOperation = (nextOperation: string) => {
@@ -38,16 +40,34 @@ const Calculator = () => {
 
     if (previousValue === null) {
       setPreviousValue(inputValue);
+      setHistory(String(inputValue));
     } else if (operation) {
       const currentValue = previousValue || 0;
       const newValue = calculate(currentValue, inputValue, operation);
 
       setDisplay(String(newValue));
       setPreviousValue(newValue);
+      
+      if (nextOperation === '=') {
+        setHistory(history + ` ${operation} ${inputValue} = ${newValue}`);
+      } else {
+        setHistory(history + ` ${operation} ${inputValue} = ${newValue}`);
+      }
     }
 
-    setWaitingForOperand(true);
-    setOperation(nextOperation);
+    if (nextOperation !== '=') {
+      setWaitingForOperand(true);
+      setOperation(nextOperation);
+      if (previousValue !== null) {
+        setHistory(prev => prev + ` ${nextOperation} `);
+      } else {
+        setHistory(prev => prev + ` ${nextOperation} `);
+      }
+    } else {
+      setOperation(null);
+      setPreviousValue(null);
+      setWaitingForOperand(true);
+    }
   };
 
   const calculate = (firstValue: number, secondValue: number, operation: string): number => {
@@ -100,6 +120,15 @@ const Calculator = () => {
 
   return (
     <Card className="p-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
+      {/* History Display */}
+      {history && (
+        <div className="mb-2 p-2 bg-slate-900/30 rounded-lg border border-slate-700/50">
+          <div className="text-right text-sm font-mono text-slate-400 overflow-hidden">
+            {history}
+          </div>
+        </div>
+      )}
+
       {/* Display */}
       <div className="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700 relative">
         {/* Operation Indicator */}
