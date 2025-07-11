@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -55,7 +54,7 @@ const Calculator = () => {
       setPreviousValue(newValue);
       
       if (nextOperation === '=') {
-        setHistory(history + ` ${operation} ${inputValue} = ${newValue}`);
+        setHistory(`${currentValue} ${operation} ${inputValue} = ${newValue}`);
       } else {
         setHistory(`${newValue}`);
       }
@@ -66,10 +65,9 @@ const Calculator = () => {
       setOperation(nextOperation);
       
       if (previousValue !== null) {
-        setHistory(prev => {
-          const cleanHistory = prev.replace(/ [+\-×÷] $/, '');
-          return cleanHistory + ` ${nextOperation} `;
-        });
+        setHistory(prev => `${prev} ${nextOperation}`);
+      } else {
+        setHistory(prev => `${prev} ${nextOperation}`);
       }
     } else {
       setOperation(null);
@@ -179,13 +177,23 @@ const Calculator = () => {
   }, [display, previousValue, operation, waitingForOperand]);
 
   const buttonClasses = "h-16 text-xl font-semibold transition-all duration-150 hover:scale-105 active:scale-95";
-  const numberButtonClasses = "bg-slate-700 hover:bg-slate-600 text-white border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white dark:border-slate-600";
-  const operatorButtonClasses = "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-purple-500";
-  const specialButtonClasses = "bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white border-slate-500";
-  const scientificButtonClasses = "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border-blue-500 text-sm";
+  const numberButtonClasses = theme === 'dark' 
+    ? "bg-slate-700 hover:bg-slate-600 text-white border-slate-600" 
+    : "bg-white hover:bg-blue-50 text-slate-800 border-blue-200";
+  const operatorButtonClasses = theme === 'dark'
+    ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-red-500"
+    : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white border-blue-400";
+  const specialButtonClasses = theme === 'dark'
+    ? "bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white border-slate-500"
+    : "bg-gradient-to-r from-slate-400 to-slate-500 hover:from-slate-300 hover:to-slate-400 text-white border-slate-300";
+  const scientificButtonClasses = theme === 'dark'
+    ? "bg-gradient-to-r from-red-800 to-red-900 hover:from-red-700 hover:to-red-800 text-white border-red-700 text-sm"
+    : "bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-300 hover:to-blue-400 text-white border-blue-300 text-sm";
 
   return (
-    <Card className="p-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl dark:bg-slate-800/90 dark:border-slate-700">
+    <Card className={theme === 'dark' 
+      ? "p-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl" 
+      : "p-6 bg-white/90 backdrop-blur-sm border-blue-200 shadow-2xl"}>
       {/* Theme Toggle */}
       <div className="flex justify-end items-center mb-4">
         <div className="flex items-center gap-2">
@@ -210,21 +218,31 @@ const Calculator = () => {
 
       {/* History Display */}
       {history && (
-        <div className="mb-2 p-2 bg-slate-900/30 rounded-lg border border-slate-700/50 dark:bg-slate-900/30 dark:border-slate-700/50">
-          <div className="text-right text-sm font-mono text-slate-400 overflow-hidden dark:text-slate-400">
+        <div className={theme === 'dark' 
+          ? "mb-2 p-2 bg-slate-900/30 rounded-lg border border-slate-700/50" 
+          : "mb-2 p-2 bg-blue-50/50 rounded-lg border border-blue-200/50"}>
+          <div className={theme === 'dark' 
+            ? "text-right text-sm font-mono text-slate-400 overflow-hidden" 
+            : "text-right text-sm font-mono text-slate-600 overflow-hidden"}>
             {history}
           </div>
         </div>
       )}
 
       {/* Display */}
-      <div className="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700 relative dark:bg-slate-900/50 dark:border-slate-700">
+      <div className={theme === 'dark' 
+        ? "mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700 relative" 
+        : "mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-200 relative"}>
         {operation && operation !== '=' && (
-          <div className="absolute top-2 left-2 text-purple-400 text-sm font-mono bg-slate-800/70 px-2 py-1 rounded dark:text-purple-400 dark:bg-slate-800/70">
+          <div className={theme === 'dark'
+            ? "absolute top-2 left-2 text-red-400 text-sm font-mono bg-slate-800/70 px-2 py-1 rounded"
+            : "absolute top-2 left-2 text-blue-600 text-sm font-mono bg-white/70 px-2 py-1 rounded"}>
             {operation}
           </div>
         )}
-        <div className="text-right text-3xl font-mono text-white overflow-hidden dark:text-white">
+        <div className={theme === 'dark' 
+          ? "text-right text-3xl font-mono text-white overflow-hidden" 
+          : "text-right text-3xl font-mono text-slate-800 overflow-hidden"}>
           {display}
         </div>
       </div>
