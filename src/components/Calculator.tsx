@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Sun, Moon, ChevronDown } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const Calculator = () => {
@@ -159,6 +160,8 @@ const Calculator = () => {
         return Math.pow(firstValue, secondValue);
       case 'mod':
         return firstValue % secondValue;
+      case '%':
+        return (firstValue * secondValue) / 100;
       default:
         return secondValue;
     }
@@ -192,7 +195,7 @@ const Calculator = () => {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [display, previousValue, operation, waitingForOperand]);
 
-  const buttonClasses = "h-16 text-xl font-semibold transition-all duration-150 hover:scale-105 active:scale-95 active:rounded-full";
+  const buttonClasses = `${isScientific ? 'h-12 text-base' : 'h-16 text-xl'} font-semibold transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 active:rounded-full transform`;
   const numberButtonClasses = theme === 'dark' 
     ? "bg-slate-700 hover:bg-slate-600 text-white border-slate-600" 
     : "bg-white hover:bg-blue-50 text-slate-800 border-blue-200";
@@ -208,8 +211,8 @@ const Calculator = () => {
 
   return (
     <Card className={theme === 'dark' 
-      ? "p-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl" 
-      : "p-6 bg-white/90 backdrop-blur-sm border-blue-200 shadow-2xl"}>
+      ? "p-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl transition-all duration-300" 
+      : "p-6 bg-white/90 backdrop-blur-sm border-blue-200 shadow-2xl transition-all duration-300"}>
       {/* Theme Toggle */}
       <div className="flex justify-end items-center mb-4">
         <div className="flex items-center gap-2">
@@ -225,8 +228,8 @@ const Calculator = () => {
       {/* History Display */}
       {history && (
         <div className={theme === 'dark' 
-          ? "mb-2 p-2 bg-slate-900/30 rounded-lg border border-slate-700/50" 
-          : "mb-2 p-2 bg-blue-50/50 rounded-lg border border-blue-200/50"}>
+          ? "mb-2 p-2 bg-slate-900/30 rounded-lg border border-slate-700/50 transition-all duration-300" 
+          : "mb-2 p-2 bg-blue-50/50 rounded-lg border border-blue-200/50 transition-all duration-300"}>
           <div className={theme === 'dark' 
             ? "text-right text-sm font-mono text-slate-400 overflow-hidden" 
             : "text-right text-sm font-mono text-slate-600 overflow-hidden"}>
@@ -237,12 +240,12 @@ const Calculator = () => {
 
       {/* Display */}
       <div className={theme === 'dark' 
-        ? "mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700 relative" 
-        : "mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-200 relative"}>
+        ? "mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700 relative transition-all duration-300" 
+        : "mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-200 relative transition-all duration-300"}>
         {operation && operation !== '=' && (
           <div className={theme === 'dark'
-            ? "absolute top-2 left-2 text-red-400 text-sm font-mono bg-slate-800/70 px-2 py-1 rounded"
-            : "absolute top-2 left-2 text-blue-600 text-sm font-mono bg-white/70 px-2 py-1 rounded"}>
+            ? "absolute top-2 left-2 text-red-400 text-sm font-mono bg-slate-800/70 px-2 py-1 rounded transition-all duration-300"
+            : "absolute top-2 left-2 text-blue-600 text-sm font-mono bg-white/70 px-2 py-1 rounded transition-all duration-300"}>
             {operation}
           </div>
         )}
@@ -253,9 +256,13 @@ const Calculator = () => {
         </div>
       </div>
 
-      {/* Scientific Functions (when enabled) */}
-      {isScientific && (
-        <div className="grid grid-cols-5 gap-2 mb-4">
+      {/* Scientific Functions (animated reveal/hide) */}
+      <div className={`overflow-hidden transition-all duration-500 ease-in-out transform ${
+        isScientific 
+          ? 'max-h-96 opacity-100 translate-y-0 mb-4' 
+          : 'max-h-0 opacity-0 -translate-y-4 mb-0'
+      }`}>
+        <div className="grid grid-cols-5 gap-2">
           <Button 
             className={`${buttonClasses} ${scientificButtonClasses}`}
             onClick={() => performScientificOperation('sin')}
@@ -341,10 +348,10 @@ const Calculator = () => {
             Clear All
           </Button>
         </div>
-      )}
+      </div>
 
       {/* Basic Calculator Grid */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-3 transition-all duration-300">
         {/* Row 1 */}
         <Button 
           className={`${buttonClasses} ${specialButtonClasses}`}
@@ -360,9 +367,9 @@ const Calculator = () => {
         </Button>
         <Button 
           className={`${buttonClasses} ${specialButtonClasses}`}
-          onClick={() => setIsScientific(!isScientific)}
+          onClick={() => performOperation('%')}
         >
-          <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${isScientific ? 'rotate-180' : ''}`} />
+          %
         </Button>
         <Button 
           className={`${buttonClasses} ${operatorButtonClasses}`}
@@ -451,7 +458,17 @@ const Calculator = () => {
 
         {/* Row 5 */}
         <Button 
-          className={`${buttonClasses} ${numberButtonClasses} col-span-2`}
+          className={`${buttonClasses} ${specialButtonClasses} flex items-center justify-center`}
+          onClick={() => setIsScientific(!isScientific)}
+        >
+          <div className={`transition-transform duration-500 ${isScientific ? 'rotate-180' : ''}`}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 2L16 8H4L10 2Z"/>
+            </svg>
+          </div>
+        </Button>
+        <Button 
+          className={`${buttonClasses} ${numberButtonClasses}`}
           onClick={() => inputNumber('0')}
         >
           0
