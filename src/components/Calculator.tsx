@@ -176,7 +176,7 @@ const Calculator = () => {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [display, previousValue, operation, waitingForOperand]);
 
-  const buttonClasses = "h-16 text-xl font-semibold transition-all duration-150 hover:scale-105 active:scale-95";
+  const buttonClasses = "h-16 text-xl font-semibold transition-all duration-150 hover:scale-105 active:scale-95 active:rounded-full";
   const numberButtonClasses = theme === 'dark' 
     ? "bg-slate-700 hover:bg-slate-600 text-white border-slate-600" 
     : "bg-white hover:bg-blue-50 text-slate-800 border-blue-200";
