@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, ChevronDown } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const Calculator = () => {
@@ -38,6 +38,22 @@ const Calculator = () => {
     setOperation(null);
     setWaitingForOperand(false);
     setHistory('');
+  };
+
+  const inputParentheses = () => {
+    // Simple parentheses handling - just add to display for now
+    if (waitingForOperand) {
+      setDisplay('(');
+      setWaitingForOperand(false);
+    } else {
+      const openCount = (display.match(/\(/g) || []).length;
+      const closeCount = (display.match(/\)/g) || []).length;
+      if (openCount > closeCount) {
+        setDisplay(display + ')');
+      } else {
+        setDisplay(display + '(');
+      }
+    }
   };
 
   const performOperation = (nextOperation: string) => {
@@ -206,16 +222,6 @@ const Calculator = () => {
         </div>
       </div>
 
-      {/* Scientific Mode Toggle */}
-      <div className="flex justify-center mb-4">
-        <Button
-          onClick={() => setIsScientific(!isScientific)}
-          className={`${specialButtonClasses} ${buttonClasses}`}
-        >
-          {isScientific ? 'Basic' : 'Scientific'}
-        </Button>
-      </div>
-
       {/* History Display */}
       {history && (
         <div className={theme === 'dark' 
@@ -341,22 +347,28 @@ const Calculator = () => {
       <div className="grid grid-cols-4 gap-3">
         {/* Row 1 */}
         <Button 
-          className={`${buttonClasses} ${specialButtonClasses} col-span-2`}
+          className={`${buttonClasses} ${specialButtonClasses}`}
           onClick={clear}
         >
-          Clear
+          AC
+        </Button>
+        <Button 
+          className={`${buttonClasses} ${specialButtonClasses}`}
+          onClick={inputParentheses}
+        >
+          ( )
+        </Button>
+        <Button 
+          className={`${buttonClasses} ${specialButtonClasses}`}
+          onClick={() => setIsScientific(!isScientific)}
+        >
+          <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${isScientific ? 'rotate-180' : ''}`} />
         </Button>
         <Button 
           className={`${buttonClasses} ${operatorButtonClasses}`}
           onClick={() => performOperation('÷')}
         >
           ÷
-        </Button>
-        <Button 
-          className={`${buttonClasses} ${operatorButtonClasses}`}
-          onClick={() => performOperation('×')}
-        >
-          ×
         </Button>
 
         {/* Row 2 */}
@@ -380,9 +392,9 @@ const Calculator = () => {
         </Button>
         <Button 
           className={`${buttonClasses} ${operatorButtonClasses}`}
-          onClick={() => performOperation('-')}
+          onClick={() => performOperation('×')}
         >
-          -
+          ×
         </Button>
 
         {/* Row 3 */}
@@ -406,9 +418,9 @@ const Calculator = () => {
         </Button>
         <Button 
           className={`${buttonClasses} ${operatorButtonClasses}`}
-          onClick={() => performOperation('+')}
+          onClick={() => performOperation('-')}
         >
-          +
+          -
         </Button>
 
         {/* Row 4 */}
@@ -431,10 +443,10 @@ const Calculator = () => {
           3
         </Button>
         <Button 
-          className={`${buttonClasses} ${operatorButtonClasses} row-span-2`}
-          onClick={() => performOperation('=')}
+          className={`${buttonClasses} ${operatorButtonClasses}`}
+          onClick={() => performOperation('+')}
         >
-          =
+          +
         </Button>
 
         {/* Row 5 */}
@@ -449,6 +461,12 @@ const Calculator = () => {
           onClick={inputDecimal}
         >
           .
+        </Button>
+        <Button 
+          className={`${buttonClasses} ${operatorButtonClasses}`}
+          onClick={() => performOperation('=')}
+        >
+          =
         </Button>
       </div>
     </Card>
